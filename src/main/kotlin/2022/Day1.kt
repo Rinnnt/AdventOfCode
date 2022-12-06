@@ -1,4 +1,4 @@
-package AoC
+package `2022`
 
 class Day1Part1 {
      fun solution() {

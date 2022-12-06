@@ -1,4 +1,4 @@
-package AoC
+package `2022`
 
 import java.io.File
 
@@ -40,6 +40,6 @@ class Day3 {
 
 fun main() {
     val sol = Day3()
-    println(sol.part1("src/2022/main/resources/Day3Input.txt"))
-    println(sol.part2("src/2022/main/resources/Day3Input.txt"))
+    println(sol.part1("src/main/resources/2022/Day3Input.txt"))
+    println(sol.part2("src/main/resources/2022/Day3Input.txt"))
 }
