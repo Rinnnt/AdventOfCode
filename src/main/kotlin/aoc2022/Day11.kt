@@ -16,9 +16,9 @@ class Monkey(
 }
 
 class Day11() {
-    val monkeys = mutableListOf<Monkey>()
+    private val monkeys = mutableListOf<Monkey>()
 
-    fun initializeMonkeys() {
+    private fun initializeMonkeys() {
         monkeys.clear()
         monkeys.add(
             Monkey(
@@ -102,15 +102,16 @@ class Day11() {
         )
     }
 
-    fun takeRound(n: Int, relief: Boolean = true) {
+    private fun takeRound(n: Int, relief: Boolean = true) {
         val zero: Long = 0
         for (i in 1..n) {
             for (monkey in monkeys) {
                 monkey.inspected = monkey.inspected.plus(monkey.items.size.toBigInteger())
                 while (monkey.items.isNotEmpty()) {
-                    val item = if (relief) monkey.operation(monkey.items.removeFirst()).divide(3.toBigInteger()) else monkey.operation(monkey.items.removeFirst())
+                    val item = if (relief) monkey.operation(monkey.items.removeFirst())
+                        .divide(3.toBigInteger()) else monkey.operation(monkey.items.removeFirst())
                     if (item.rem(monkey.divTestNumber.toBigInteger()) == 0.toBigInteger()) {
-                        monkeys[monkey.trueMonkey].items.add(item.rem(9699690.toBigInteger()))//.divide(monkey.divTestNumber.toBigInteger()))
+                        monkeys[monkey.trueMonkey].items.add(item.rem(9699690.toBigInteger()))
                     } else {
                         monkeys[monkey.falseMonkey].items.add(item.rem(9699690.toBigInteger()))
                     }
