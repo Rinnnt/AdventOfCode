@@ -26,7 +26,6 @@ class Day15(filename: String) {
     fun part1(): Int = cannotContainsRow(2_000_000)
 
     /**
-     * Mind blowing solution
      * Since there is only one possible point that is not covered by the sensors
      * We just need to trace along the borders of the sensor's reach
      * and check if the point just out of reach of the sensor (distance + 1) is covered by any other sensor
