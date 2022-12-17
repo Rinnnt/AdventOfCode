@@ -60,9 +60,8 @@ class Day17(filename : String) {
      * occupied is a map that stores the points on the grid that are
      * occupied by any settled rocks
      */
-    val jetStream = File(filename).bufferedReader().readLine()
-//    val jetStream = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-    val occupied = mutableSetOf<Pair<Long, Long>>(
+    val jetStream: String = File(filename).bufferedReader().readLine()
+    private val occupied = mutableSetOf<Pair<Long, Long>>(
         0.toLong() to 0.toLong(),
         1.toLong() to 0.toLong(),
         2.toLong() to 0.toLong(),
@@ -71,24 +70,9 @@ class Day17(filename : String) {
         5.toLong() to 0.toLong(),
         6.toLong() to 0.toLong(),
     )
-    val widthRange = 0 until 7
-    var bufferheight: Long = 0
+    private val widthRange = 0 until 7
 
-    fun updateBuffer(height: Long) {
-        if (occupied.containsAll(listOf(
-                0.toLong() to height.toLong(),
-                1.toLong() to height.toLong(),
-                2.toLong() to height.toLong(),
-                3.toLong() to height.toLong(),
-                4.toLong() to height.toLong(),
-                5.toLong() to height.toLong(),
-                6.toLong() to height.toLong(),
-        ))) {
-            occupied.removeIf { it.second < height }
-        }
-    }
-
-    fun isNotValid(p: Pair<Long, Long>, rock: Rocks): Boolean {
+    private fun isNotValid(p: Pair<Long, Long>, rock: Rocks): Boolean {
         if (rock.pieces.all { it.first + p.first in widthRange }) {
             if (rock.pieces.all { !occupied.contains(it.first + p.first to it.second + p.second) }) {
                 return false
@@ -97,7 +81,7 @@ class Day17(filename : String) {
         return true
     }
 
-    fun simulate(n: Long): Long {
+    private fun simulate(n: Long): Long {
         var height: Long = 0
         var jet: Int = 0
 
@@ -163,7 +147,6 @@ class Day17(filename : String) {
             bottomLeft = bottomLeft.first to bottomLeft.second + 1
             // update occupied positions
             rock.pieces.forEach { occupied.add(it.first + bottomLeft.first to it.second + bottomLeft.second) }
-//            rock.pieces.distinctBy { it.second }.forEach { updateBuffer(it.second + bottomLeft.second) }
             // update new height
             height = height.coerceAtLeast(rock.pieces.maxOf { it.second + bottomLeft.second })
         }
@@ -175,8 +158,131 @@ class Day17(filename : String) {
     fun part1(): Long =
         simulate(2022)
 
-    fun part2(): Long =
-        simulate(1_000_000)
+
+    private val occupied2 = mutableMapOf<Long, MutableSet<Long>>(
+        0.toLong() to mutableSetOf(0, 1, 2, 3, 4, 5, 6)
+    )
+
+    private fun isNotValid2(p: Pair<Long, Long>, rock: Rocks): Boolean {
+        if (rock.pieces.all { it.first + p.first in widthRange }) {
+            if (rock.pieces.all { !occupied2[it.second + p.second]!!.contains(it.first + p.first) }) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun simulate2(n: Long): Long {
+        var height: Long = 0
+        var jet: Int = 0
+
+        for (i in 0 until n) {
+            if (i % 50455 == 0.toLong()) {
+                for (row in height - 78500 downTo height - (78500*2)) {
+                    occupied2.remove(row)
+                }
+            }
+            val rock = Rocks.values()[i.toInt() % Rocks.values().size]
+            var bottomLeft = 2.toLong() to height + 4
+            for (row in height + 1..height + 7) {
+                if (!occupied2.contains(row)) {
+                    occupied2[row] = mutableSetOf()
+                }
+            }
+
+            /**
+             * First three steps down is guaranteed not to overlap
+             */
+            for (j in 1..3) {
+                if (jetStream[jet] == '<') {
+                    // and if it can be pushed left
+                    if (!isNotValid2(bottomLeft.first - 1 to bottomLeft.second, rock)) {
+                        // push left
+                        bottomLeft = bottomLeft.first - 1 to bottomLeft.second
+                    }
+                }
+                // if jetStream is to the right
+                if (jetStream[jet] == '>') {
+                    // and if it can be pushed right
+                    if (!isNotValid2(bottomLeft.first + 1 to bottomLeft.second, rock)) {
+                        // push right
+                        bottomLeft = bottomLeft.first + 1 to bottomLeft.second
+                    }
+                }
+
+                // drop down one height
+                bottomLeft = bottomLeft.first to bottomLeft.second - 1
+               // update jet
+                jet = (jet + 1) % jetStream.length
+            }
+
+            /**
+             * While it can continue to step down
+             */
+            while (!isNotValid2(bottomLeft, rock)) {
+
+                // if jetStream is to the left
+                if (jetStream[jet] == '<') {
+                    // and if it can be pushed left
+                    if (!isNotValid2(bottomLeft.first - 1 to bottomLeft.second, rock)) {
+                        // push left
+                        bottomLeft = bottomLeft.first - 1 to bottomLeft.second
+                    }
+                }
+                // if jetStream is to the right
+                if (jetStream[jet] == '>') {
+                    // and if it can be pushed right
+                    if (!isNotValid2(bottomLeft.first + 1 to bottomLeft.second, rock)) {
+                        // push right
+                        bottomLeft = bottomLeft.first + 1 to bottomLeft.second
+                    }
+                }
+
+                // drop down one height
+                bottomLeft = bottomLeft.first to bottomLeft.second - 1
+               // update jet
+                jet = (jet + 1) % jetStream.length
+            }
+
+            // revert last drop down (since it is overlapping to break the while loop)
+            bottomLeft = bottomLeft.first to bottomLeft.second + 1
+            // update occupied positions
+            rock.pieces.forEach { occupied2[it.second + bottomLeft.second]!!.add(it.first + bottomLeft.first) }
+            // update new height
+            height = height.coerceAtLeast(rock.pieces.maxOf { it.second + bottomLeft.second })
+        }
+
+        return height
+    }
+
+    fun part2(): Long {
+        occupied.clear()
+        occupied.addAll(
+            listOf(
+                0.toLong() to 0.toLong(),
+                1.toLong() to 0.toLong(),
+                2.toLong() to 0.toLong(),
+                3.toLong() to 0.toLong(),
+                4.toLong() to 0.toLong(),
+                5.toLong() to 0.toLong(),
+                6.toLong() to 0.toLong()
+            )
+        )
+        val height = simulate2(200000000)
+
+//        for (row in height downTo height - 100) {
+//            for (col in widthRange) {
+//                if (occupied2[row]!!.contains(col.toLong())) {
+//                    print("# ")
+//                }
+//                else {
+//                    print(". ")
+//                }
+//            }
+//            print("\n")
+//        }
+        return height
+    }
 }
 
 fun main() {
@@ -185,7 +291,8 @@ fun main() {
     val time = measureTimeMillis {
         println(sol.part2())
     }
-    println(time / 1000.toDouble())
-    println("Estimated time all: ${time / 1000.toDouble() * 1000000 / 3600.toDouble() / 24.toDouble()} days")
-    println("given memory constraints are met and speed stays constant")
+    println("${time / 1000.toDouble()} seconds")
+    println("Estimated time for part2: ${time * (5000).toDouble() / (1000 * 3600 * 24).toDouble()} Days")
+
+    println("LCM: ${sol.jetStream.length * 5}")
 }
