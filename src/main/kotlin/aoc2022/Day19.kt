@@ -28,7 +28,7 @@ class Day19(filename: String) {
      * * blueprint number
      * * list of robot costs
      */
-    val blueprints = File(filename).bufferedReader().readLines().map {
+    private val blueprints = File(filename).bufferedReader().readLines().map {
         it.substringAfter("Blueprint ").substringBefore(":").toInt() to
                 it.substringAfter(": ").substringBeforeLast(".").split(". ").map {
                     var prev = ""
@@ -43,13 +43,13 @@ class Day19(filename: String) {
                 }
     }
 
-    fun blueprintQuality(blueprint: Pair<Int, List<Resources>>): Int {
+    private fun blueprintQuality(blueprint: Pair<Int, List<Resources>>): Int {
         val blueprintNumber = blueprint.first
         val maxNeeded = listOf(blueprint.second.maxOf { it.ore },
             blueprint.second.maxOf { it.clay },
             blueprint.second.maxOf { it.obsidian })
         val robotResources = blueprint.second.zip(eachResource)
-        var memo = mutableMapOf<Triple<Resources, Resources, Int>, Int>()
+        val memo = mutableMapOf<Triple<Resources, Resources, Int>, Int>()
 
         /**
          * Finds the maximum number of extra geodes it can open from the given state
@@ -125,12 +125,12 @@ class Day19(filename: String) {
     fun part1(): Int =
         blueprints.withIndex().sumOf { blueprintQuality(it.value) }
 
-    fun blueprintGeodes(blueprint: Pair<Int, List<Resources>>): Int {
+    private fun blueprintGeodes(blueprint: Pair<Int, List<Resources>>): Int {
         val robotResources = blueprint.second.zip(eachResource)
         val maxNeeded = listOf(blueprint.second.maxOf { it.ore },
             blueprint.second.maxOf { it.clay },
             blueprint.second.maxOf { it.obsidian })
-        var memo = mutableMapOf<Triple<Resources, Resources, Int>, Int>()
+        val memo = mutableMapOf<Triple<Resources, Resources, Int>, Int>()
 
         /**
          * Finds the maximum number of extra geodes it can open from the given state
