@@ -36,20 +36,19 @@ class Day23(filename: String) {
             val goTo = mutableMapOf<Position, Position>()
             val dest = mutableMapOf<Position, Int>()
             elves.forEach { e ->
-                goTo[e] = e
                 if (!adjacent.all { !elves.contains(Position(e.x + it.x, e.y + it.y)) }) {
                     for (j in 0 until 4) {
                         val idx = (dirIndex + j) % directions.size
                         if (directions[idx].first.all { !elves.contains(Position(e.x + it.x, e.y + it.y)) }) {
                             val p = directions[idx].second
                             goTo[e] = Position(e.x + p.x, e.y + p.y)
+                            dest[goTo[e]!!] = dest.getOrDefault(goTo[e]!!, 0) + 1
                             break
                         }
                     }
                 }
-                dest[goTo[e]!!] = dest.getOrDefault(goTo[e]!!, 0) + 1
             }
-            if (goTo.all { (e, v) -> e == v }) {
+            if (goTo.isEmpty()) {
                 return round
             }
             goTo.forEach { (old, new) ->
