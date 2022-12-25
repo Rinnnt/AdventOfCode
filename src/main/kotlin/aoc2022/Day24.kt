@@ -13,8 +13,16 @@ class Day24(filename: String) {
             .map { Pair(Position(row.index - 1, it.index - 1), directions[blizzardDirection[it.value]!!]) }
     }.flatten().toSet()
 
+    private fun gcd(a: Int, b: Int): Int =
+        if (b == 0) a else gcd(b, a % b)
+
+    private fun lcm(a: Int, b: Int): Int =
+        (a * b) / gcd(a, b)
+
     private val rowSize = lines.size - 2
     private val colSize = lines.first().length - 2
+    private val cycle = lcm(rowSize, colSize)
+    val blizzardStates = blizzardStates(blizzards)
     private var start = Position(-1, lines.first().indexOf('.') - 1)
     private var end = Position(rowSize, lines.last().indexOf('.') - 1)
 
@@ -28,32 +36,38 @@ class Day24(filename: String) {
         return tmp
     }
 
+    private fun blizzardStates(bs: Set<Pair<Position, Position>>): List<Set<Pair<Position, Position>>> {
+        val states = mutableListOf<Set<Pair<Position, Position>>>()
+        states.add(bs)
+        while (!states.contains(moveBlizzards(states.last()))) {
+            states.add(moveBlizzards(states.last()))
+        }
+        return states
+    }
+
     /*
     bfs with each state as (position, blizzards, time) and check each direction and add new states is too slow
     Improve search with each state as (all reachable positions, blizzard state, time) still slow but better
      */
-    private fun search(bzs: Set<Pair<Position, Position>>): Pair<Int, Set<Pair<Position, Position>>> {
-        val memo = mutableMapOf<Set<Pair<Position, Position>>, Set<Pair<Position, Position>>>()
+    private fun search(state: Int = 0): Pair<Int, Int> {
+//        val memo = mutableSetOf<Pair<Position, Int>>()
+        var stateIdx = state
         var pos = setOf(start)
-        var bs = bzs
+        var bs: Set<Pair<Position, Position>>
         var step = 0
 
         while (!pos.contains(end)) {
-            if (memo.contains(bs)) {
-                bs = memo[bs]!!
-            } else {
-                val tmp = bs
-                bs = moveBlizzards(bs)
-                memo[tmp] = bs
-            }
+            stateIdx = (stateIdx + 1) % cycle
+            bs = blizzardStates[stateIdx]
 
             val newPos = mutableSetOf<Position>()
             pos.forEach { p ->
                 directions.forEach { d ->
                     val newP = Position(p.x + d.x, p.y + d.y)
                     if ((newP.x in 0 until rowSize && newP.y in 0 until colSize) || (newP == start) || (newP == end)) {
-                        if (!bs.map { it.first }.contains(newP)) {
+                        if (!bs.map { it.first }.contains(newP)) { //&& !memo.contains(Pair(newP, stateIdx))) {
                             newPos.add(newP)
+//                            memo.add(Pair(newP, stateIdx))
                         }
                     }
                 }
@@ -62,11 +76,11 @@ class Day24(filename: String) {
             pos = newPos
             step++
         }
-        return step to bs
+        return step to stateIdx
     }
 
     fun part1(): Int =
-        search(blizzards).first
+        search().first
 
     private fun switchStartEnd() {
         val tmp = start
@@ -75,11 +89,11 @@ class Day24(filename: String) {
     }
 
     fun part2(): Int {
-        val (trip1, b1) = search(blizzards)
+        val (trip1, b1) = search()
         switchStartEnd()
         val (trip2, b2) = search(b1)
         switchStartEnd()
-        val (trip3, b3) = search(b2)
+        val (trip3, _) = search(b2)
         return trip1 + trip2 + trip3
     }
 }
