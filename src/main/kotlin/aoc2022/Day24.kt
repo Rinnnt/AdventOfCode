@@ -1,7 +1,6 @@
 package aoc2022
 
 import java.io.File
-import kotlin.system.measureTimeMillis
 
 class Day24(filename: String) {
     private val directions = listOf(Position(1, 0), Position(0, 1), Position(-1, 0), Position(0, -1), Position(0, 0))
@@ -22,7 +21,7 @@ class Day24(filename: String) {
     private val rowSize = lines.size - 2
     private val colSize = lines.first().length - 2
     private val cycle = lcm(rowSize, colSize)
-    val blizzardStates = blizzardStates(blizzards)
+    private val blizzardStates = blizzardStates(blizzards)
     private var start = Position(-1, lines.first().indexOf('.') - 1)
     private var end = Position(rowSize, lines.last().indexOf('.') - 1)
 
@@ -36,13 +35,16 @@ class Day24(filename: String) {
         return tmp
     }
 
-    private fun blizzardStates(bs: Set<Pair<Position, Position>>): List<Set<Pair<Position, Position>>> {
+    /*
+    Generates all possible blizzard states and remove the information about direction
+     */
+    private fun blizzardStates(bs: Set<Pair<Position, Position>>): List<Set<Position>> {
         val states = mutableListOf<Set<Pair<Position, Position>>>()
         states.add(bs)
         while (!states.contains(moveBlizzards(states.last()))) {
             states.add(moveBlizzards(states.last()))
         }
-        return states
+        return states.map { state -> state.map { it.first }.toSet() }
     }
 
     /*
@@ -50,10 +52,9 @@ class Day24(filename: String) {
     Improve search with each state as (all reachable positions, blizzard state, time) still slow but better
      */
     private fun search(state: Int = 0): Pair<Int, Int> {
-//        val memo = mutableSetOf<Pair<Position, Int>>()
         var stateIdx = state
         var pos = setOf(start)
-        var bs: Set<Pair<Position, Position>>
+        var bs: Set<Position>
         var step = 0
 
         while (!pos.contains(end)) {
@@ -65,9 +66,8 @@ class Day24(filename: String) {
                 directions.forEach { d ->
                     val newP = Position(p.x + d.x, p.y + d.y)
                     if ((newP.x in 0 until rowSize && newP.y in 0 until colSize) || (newP == start) || (newP == end)) {
-                        if (!bs.map { it.first }.contains(newP)) { //&& !memo.contains(Pair(newP, stateIdx))) {
+                        if (!bs.contains(newP)) {
                             newPos.add(newP)
-//                            memo.add(Pair(newP, stateIdx))
                         }
                     }
                 }
@@ -100,14 +100,6 @@ class Day24(filename: String) {
 
 fun main() {
     val sol = Day24("src/main/resources/2022/Day24Input.txt")
-    // 22.03 seconds
-    val time = measureTimeMillis {
-        println(sol.part1())
-    }
-    println("part1: ${time / 1000.0} seconds")
-    // 60.572 seconds
-    val time2 = measureTimeMillis {
-        println(sol.part2())
-    }
-    println("part2: ${time2 / 1000.0} seconds")
+    println(sol.part1())
+    println(sol.part2())
 }
