@@ -76,7 +76,6 @@ class Day16(filename: String) {
         }
 
         var score: Long = maxScore("AA", 26, opened)
-//        val nextScore = maxScore("AA", 26, opened)
         for (nextValve in leadsToUseful[valve]!!.filter { !opened.contains(it) }) {
             val requiredTime = shortestDistance[Pair(valve, nextValve)]!!
             if (requiredTime + 1 < time) {
@@ -88,7 +87,6 @@ class Day16(filename: String) {
                 opened.remove(nextValve)
             }
         }
-//        score = score.coerceAtLeast(nextScore)
         cmemo[Triple(valve, time, opened.toSet())] = score
         return score
     }
