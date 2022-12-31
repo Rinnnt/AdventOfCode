@@ -4,11 +4,12 @@ import java.io.File
 
 interface FileSystem
 
-class FFile(val size: Int, val name: String): FileSystem {
+class FFile(val size: Int, val name: String) : FileSystem {
 //    override fun toString(): String = "  - $name (file, size=${size})"
 }
 
-class Directory(val name: String, val files: MutableList<FileSystem> = mutableListOf(), var size: Int? = null): FileSystem {
+class Directory(val name: String, val files: MutableList<FileSystem> = mutableListOf(), var size: Int? = null) :
+    FileSystem {
 //    override fun toString(): String {
 //        val sb = StringBuilder()
 //        sb.append("- $name (dir)")
@@ -38,6 +39,7 @@ class Day7(filename: String) {
                             cur = root
                             parents.clear()
                         }
+
                         ".." -> cur = parents.removeLast()
                         else -> {
                             parents.addLast(cur)
@@ -45,6 +47,7 @@ class Day7(filename: String) {
                         }
                     }
                 }
+
                 "dir" -> cur.files.add(Directory(line[1]))
                 else -> cur.files.add(FFile(line[0].toInt(), line[1]))
             }
@@ -55,14 +58,14 @@ class Day7(filename: String) {
     private fun getSize(root: Directory): Int {
         if (root.size != null) {
             return root.size!!
-        }
-        else {
+        } else {
             var total = 0
             for (file in root.files) {
                 when (file) {
                     is FFile -> {
                         total += file.size
                     }
+
                     is Directory -> {
                         val s = getSize(file)
                         file.size = s
@@ -96,7 +99,7 @@ class Day7(filename: String) {
 }
 
 fun main() {
-    val sol = Day7("src/main/resources/2022/Day7Input.txt")
+    val sol = Day7("src/main/resources/2022/Day07Input.txt")
     println(sol.part1())
     println(sol.part2())
 }

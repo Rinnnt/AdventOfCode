@@ -45,25 +45,25 @@ class Day9(filename: String) {
         return visited.size
     }
 
-    private val knots = MutableList<Pos>(10) {Pos(0, 0)}
+    private val knots = MutableList<Pos>(10) { Pos(0, 0) }
     private val endVisited = mutableSetOf(Pos(0, 0))
 
     private fun move2(p: Pair<Dir, Int>) {
         for (i in 1..p.second) {
             knots[0] = knots[0].translate(p.first.dx, p.first.dy)
             for (j in 0 until knots.size - 1) {
-                if (!knots[j].touching(knots[j+1])) {
+                if (!knots[j].touching(knots[j + 1])) {
                     val dx: Int = when {
-                        knots[j].x > knots[j+1].x -> 1
-                        knots[j].x < knots[j+1].x -> -1
+                        knots[j].x > knots[j + 1].x -> 1
+                        knots[j].x < knots[j + 1].x -> -1
                         else -> 0
                     }
                     val dy: Int = when {
-                        knots[j].y > knots[j+1].y -> 1
-                        knots[j].y < knots[j+1].y -> -1
+                        knots[j].y > knots[j + 1].y -> 1
+                        knots[j].y < knots[j + 1].y -> -1
                         else -> 0
                     }
-                    knots[j+1] = knots[j+1].translate(dx, dy)
+                    knots[j + 1] = knots[j + 1].translate(dx, dy)
                 }
             }
             endVisited.add(knots.last())
@@ -76,14 +76,14 @@ class Day9(filename: String) {
         val minY = knots.minOf { it.y }
         val maxY = knots.maxOf { it.y }
 
-       for (i in maxY downTo minY) {
-           for (j in minX .. maxX) {
-               print(knots.withIndex().firstOrNull {it.value.x == j && it.value.y == i }?.index ?: '.')
-               print(' ')
-           }
-           print("\n")
-       }
-       println()
+        for (i in maxY downTo minY) {
+            for (j in minX..maxX) {
+                print(knots.withIndex().firstOrNull { it.value.x == j && it.value.y == i }?.index ?: '.')
+                print(' ')
+            }
+            print("\n")
+        }
+        println()
     }
 
     fun part2(): Int {
@@ -93,7 +93,7 @@ class Day9(filename: String) {
 }
 
 fun main() {
-    val sol = Day9("src/main/resources/2022/Day9Input.txt")
+    val sol = Day9("src/main/resources/2022/Day09Input.txt")
     println(sol.part1())
     println(sol.part2())
 }

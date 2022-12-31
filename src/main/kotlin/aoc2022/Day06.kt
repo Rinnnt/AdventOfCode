@@ -14,7 +14,7 @@ class Day6(val filename: String) {
 }
 
 fun main() {
-    val sol = Day6("src/main/resources/2022/Day6Input.txt")
+    val sol = Day6("src/main/resources/2022/Day06Input.txt")
     println(sol.part1())
     println(sol.part2())
 }

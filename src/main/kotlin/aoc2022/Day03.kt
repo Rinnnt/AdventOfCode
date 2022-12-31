@@ -40,6 +40,6 @@ class Day3 {
 
 fun main() {
     val sol = Day3()
-    println(sol.part1("src/main/resources/2022/Day3Input.txt"))
-    println(sol.part2("src/main/resources/2022/Day3Input.txt"))
+    println(sol.part1("src/main/resources/2022/Day03Input.txt"))
+    println(sol.part2("src/main/resources/2022/Day03Input.txt"))
 }
