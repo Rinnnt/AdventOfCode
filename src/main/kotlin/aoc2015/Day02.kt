@@ -3,8 +3,8 @@ package aoc2015
 import java.io.File
 
 class Day02(filename: String) {
-    val regex = """(\d+)x(\d+)x(\d+)""".toRegex()
-    val dimensions = File(filename).bufferedReader().readLines().map {
+    private val regex = """(\d+)x(\d+)x(\d+)""".toRegex()
+    private val dimensions = File(filename).bufferedReader().readLines().map {
         val (x, y, z) = regex.find(it)!!.destructured
         Triple(x.toInt(), y.toInt(), z.toInt())
     }
