@@ -6,11 +6,11 @@ interface Operation {
     val cycles: Int
 }
 
-class Noop(): Operation {
+class Noop : Operation {
     override val cycles = 1
 }
 
-class Addx(val value: Int): Operation {
+class Addx(val value: Int) : Operation {
     override val cycles = 2
 }
 
@@ -53,7 +53,7 @@ class Day10(filename: String) {
     }
 
     private fun drawPixel() {
-        print(if ((cycle - 1) % 40 in register - 1.. register + 1) "#" else ".")
+        print(if ((cycle - 1) % 40 in register - 1..register + 1) "#" else ".")
         print(" ")
         print(if (cycle % 40 == 0) "\n" else "")
     }
