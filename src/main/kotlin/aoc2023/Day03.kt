@@ -3,14 +3,14 @@ package aoc2023
 import java.io.File
 
 class Day03(filename: String) {
-    val lines = File(filename).bufferedReader().readLines()
+    private val lines = File(filename).bufferedReader().readLines()
 
-    val dxs = listOf(-1, 0, 1)
-    val dys = listOf(-1, 0, 1)
-    val dxys = dxs.flatMap { dx -> dys.map { dy -> dx to dy } }
-    val gearRegex = Regex("\\*")
-    val symbolRegex = Regex("[^0-9.]")
-    val numberRegex = Regex("\\d+")
+    private val dxs = listOf(-1, 0, 1)
+    private val dys = listOf(-1, 0, 1)
+    private val dxys = dxs.flatMap { dx -> dys.map { dy -> dx to dy } }
+    private val gearRegex = Regex("\\*")
+    private val symbolRegex = Regex("[^0-9.]")
+    private val numberRegex = Regex("\\d+")
 
     private fun inBounds(x: Int, y: Int): Boolean = lines.indices.contains(x) && lines[x].indices.contains(y)
 
